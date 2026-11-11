@@ -1,0 +1,17 @@
+{
+  "projeto": "TDI — Taxa de Distorção Idade-Série",
+  "camada": "Municípios do Rio Grande do Sul",
+  "arquivo_origem": "/content/mapa_rs.gpkg",
+  "layer_origem": "rs_municipios_2024",
+  "coluna_codigo_origem": "CD_MUN",
+  "arquivo_web": "dados/mapa/municipios_rs.geojson",
+  "crs": "EPSG:4326",
+  "municipios": 497,
+  "tolerancia_simplificacao_graus": 0.0005,
+  "precisao_coordenadas_casas": 5,
+  "tamanho_mb": 3.613,
+  "campos": [
+    "MUNICIPIO_CODIGO",
+    "MUNICIPIO_NOME"
+  ]
+}

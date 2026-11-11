@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Painel histórico da Taxa de Distorção Idade-Série — Brasil, Estados, municípios e escolas do Rio Grande do Sul."
+    >
+
+    <title>
+        TDI — Taxa de Distorção Idade-Série
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIINfQ3yn5a01MZbMZ5aX8hYQ8I5nBvNQ1M="
+        crossorigin=""
+    >
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
+    <script
+        src="https://cdn.plot.ly/plotly-2.35.2.min.js">
+    </script>
+
+</head>
+
+
+<body>
+
+    <div id="loadingScreen" class="loading-screen">
+
+        <div class="loading-box">
+
+            <div class="spinner"></div>
+
+            <strong>
+                Carregando painel TDI
+            </strong>
+
+            <span>
+                Preparando as séries históricas...
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <header class="top-header">
+
+        <div class="title-block">
+
+            <div class="eyebrow">
+                INDICADORES EDUCACIONAIS • 2007–2025
+            </div>
+
+            <h1>
+                Taxa de Distorção Idade-Série
+            </h1>
+
+            <p>
+                Brasil, Unidades da Federação, municípios e escolas do Rio Grande do Sul
+            </p>
+
+        </div>
+
+        <div class="header-actions">
+
+            <div class="source-badge">
+
+                <span>Fonte</span>
+
+                <strong>
+                    Inep
+                </strong>
+
+            </div>
+
+            <button
+                id="methodologyButton"
+                class="methodology-button"
+                type="button"
+            >
+                Metodologia
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <nav class="tabs">
+
+        <button
+            class="tab-button active"
+            data-view="estados"
+        >
+            Brasil e Estados
+        </button>
+
+        <button
+            class="tab-button"
+            data-view="municipios"
+        >
+            Municípios do RS
+        </button>
+
+        <button
+            class="tab-button"
+            data-view="escolas"
+        >
+            Escolas do RS
+        </button>
+
+    </nav>
+
+
+    <section class="filters-panel">
+
+        <div class="filter-item">
+
+            <label for="yearSelect">
+                Ano
+            </label>
+
+            <select id="yearSelect"></select>
+
+        </div>
+
+
+        <div class="filter-item">
+
+            <label for="indicatorSelect">
+                Indicador
+            </label>
+
+            <select id="indicatorSelect">
+
+                <option value="TDI_FUN">
+                    Ensino Fundamental — Total
+                </option>
+
+                <option value="TDI_FUN_AI">
+                    Ensino Fundamental — Anos Iniciais
+                </option>
+
+                <option value="TDI_FUN_AF">
+                    Ensino Fundamental — Anos Finais
+                </option>
+
+                <option value="TDI_MED">
+                    Ensino Médio — Total
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-item">
+
+            <label for="locationSelect">
+                Localização
+            </label>
+
+            <select id="locationSelect">
+
+                <option value="Total">
+                    Total
+                </option>
+
+                <option value="Urbana">
+                    Urbana
+                </option>
+
+                <option value="Rural">
+                    Rural
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="filter-item">
+
+            <label for="dependencySelect">
+                Dependência Administrativa
+            </label>
+
+            <select id="dependencySelect">
+
+                <option value="Total">
+                    Total
+                </option>
+
+                <option value="Pública">
+                    Pública
+                </option>
+
+                <option value="Federal">
+                    Federal
+                </option>
+
+                <option value="Estadual">
+                    Estadual
+                </option>
+
+                <option value="Municipal">
+                    Municipal
+                </option>
+
+                <option value="Privada">
+                    Privada
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div
+            class="filter-item"
+            id="ufFilterBox"
+        >
+
+            <label for="ufSelect">
+                Estado em destaque
+            </label>
+
+            <select id="ufSelect"></select>
+
+        </div>
+
+
+        <div
+            class="filter-item hidden"
+            id="municipalityFilterBox"
+        >
+
+            <label for="municipalitySelect">
+                Município
+            </label>
+
+            <select id="municipalitySelect"></select>
+
+        </div>
+
+    </section>
+
+
+    <main>
+
+
+        <!-- =================================================================================
+             BRASIL E ESTADOS
+             ================================================================================= -->
+
+        <section
+            id="view-estados"
+            class="view active"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-kicker">
+                        VISÃO NACIONAL
+                    </div>
+
+                    <h2>
+                        Brasil e Unidades da Federação
+                    </h2>
+
+                </div>
+
+                <div
+                    id="overviewContext"
+                    class="context-label"
+                ></div>
+
+            </div>
+
+
+            <div class="kpi-grid">
+
+                <article class="kpi-card">
+
+                    <span>
+                        Brasil
+                    </span>
+
+                    <strong id="kpiBrasil">
+                        —
+                    </strong>
+
+                    <small>
+                        taxa oficial
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span id="kpiUfLabel">
+                        Rio Grande do Sul
+                    </span>
+
+                    <strong id="kpiUf">
+                        —
+                    </strong>
+
+                    <small>
+                        taxa oficial
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        Posição entre UFs
+                    </span>
+
+                    <strong id="kpiRankUf">
+                        —
+                    </strong>
+
+                    <small>
+                        ordem crescente da TDI
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        UFs com valor
+                    </span>
+
+                    <strong id="kpiUfDisponiveis">
+                        —
+                    </strong>
+
+                    <small>
+                        no recorte selecionado
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            <div class="content-grid">
+
+                <article class="panel chart-panel">
+
+                    <div class="panel-title">
+
+                        <div>
+
+                            <h3>
+                                Série histórica
+                            </h3>
+
+                            <p>
+                                Brasil × estado selecionado
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="chartEstadosSerie"
+                        class="plot"
+                    ></div>
+
+                </article>
+
+
+                <article class="panel ranking-panel">
+
+                    <div class="panel-title">
+
+                        <div>
+
+                            <h3>
+                                Ranking das UFs
+                            </h3>
+
+                            <p>
+                                menor para maior TDI
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="rankingEstados"
+                        class="ranking-list"
+                    ></div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================================================
+             MUNICÍPIOS
+             ================================================================================= -->
+
+        <section
+            id="view-municipios"
+            class="view"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-kicker">
+                        RIO GRANDE DO SUL
+                    </div>
+
+                    <h2>
+                        Municípios
+                    </h2>
+
+                </div>
+
+                <div
+                    id="municipalContext"
+                    class="context-label"
+                ></div>
+
+            </div>
+
+
+            <div class="kpi-grid">
+
+                <article class="kpi-card">
+
+                    <span>
+                        Município selecionado
+                    </span>
+
+                    <strong id="kpiMunicipio">
+                        —
+                    </strong>
+
+                    <small id="kpiMunicipioNome">
+                        —
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        Rio Grande do Sul
+                    </span>
+
+                    <strong id="kpiRsMunicipal">
+                        —
+                    </strong>
+
+                    <small>
+                        taxa oficial da UF
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        Municípios com valor
+                    </span>
+
+                    <strong id="kpiMunicipiosDisponiveis">
+                        —
+                    </strong>
+
+                    <small>
+                        no recorte selecionado
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        Sem valor
+                    </span>
+
+                    <strong id="kpiMunicipiosSemValor">
+                        —
+                    </strong>
+
+                    <small>
+                        não tratados como zero
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            
+            <div class="map-controls-panel">
+
+                <div class="map-control-group">
+
+                    <label for="mapModeSelect">
+                        Visualização do mapa
+                    </label>
+
+                    <select id="mapModeSelect">
+
+                        <option value="taxa">
+                            Taxa observada
+                        </option>
+
+                        <option value="meta">
+                            Distância ao patamar da meta 2027
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="animation-controls">
+
+                    <button
+                        id="previousYearButton"
+                        class="map-icon-button"
+                        type="button"
+                        title="Ano anterior"
+                    >
+                        ◀
+                    </button>
+
+                    <button
+                        id="playMapButton"
+                        class="map-play-button"
+                        type="button"
+                    >
+                        ▶ Reproduzir
+                    </button>
+
+                    <button
+                        id="nextYearButton"
+                        class="map-icon-button"
+                        type="button"
+                        title="Ano seguinte"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="map-control-group speed-control">
+
+                    <label for="animationSpeedSelect">
+                        Velocidade
+                    </label>
+
+                    <select id="animationSpeedSelect">
+
+                        <option value="1600">
+                            Lenta
+                        </option>
+
+                        <option value="1000" selected>
+                            Normal
+                        </option>
+
+                        <option value="600">
+                            Rápida
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div
+                    id="mapBenchmarkNote"
+                    class="map-benchmark-note"
+                >
+                </div>
+
+            </div>
+
+
+            <article class="panel map-panel">
+
+                <div class="panel-title map-panel-title">
+
+                    <div>
+
+                        <h3>
+                            Distribuição municipal da TDI
+                        </h3>
+
+                        <p id="mapSubtitle">
+                            Rio Grande do Sul
+                        </p>
+
+                    </div>
+
+                    <div class="map-title-badges">
+
+                        <span
+                            id="mapIndicatorBadge"
+                            class="map-badge"
+                        >
+                        </span>
+
+                        <span
+                            id="mapYearBadge"
+                            class="map-badge year"
+                        >
+                            2025
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="map-container">
+
+                    <div
+                        id="mapMunicipios"
+                        class="municipal-map"
+                    ></div>
+
+
+                    <div
+                        id="mapYearOverlay"
+                        class="map-year-overlay"
+                    >
+                        2025
+                    </div>
+
+
+                    <div
+                        id="mapLegend"
+                        class="map-legend"
+                    >
+                    </div>
+
+                </div>
+
+
+                <div class="map-footer">
+
+                    <span>
+                        Clique em um município para selecioná-lo.
+                    </span>
+
+                    <span>
+                        Municípios sem informação permanecem visíveis em cinza.
+                    </span>
+
+                </div>
+
+            </article>
+
+
+
+
+            <!-- =========================================================================
+                 V3 — COMPARAÇÃO ESTRUTURAL
+                 ========================================================================= -->
+
+            <section class="comparison-section">
+
+                <div class="comparison-heading">
+
+                    <div>
+
+                        <div class="section-kicker">
+                            LEITURA COMPARATIVA
+                        </div>
+
+                        <h3>
+                            Estrutura da distorção idade-série
+                        </h3>
+
+                        <p>
+                            Compare etapas de ensino, localização
+                            e dependência administrativa.
+                        </p>
+
+                    </div>
+
+                    
+                    <div class="comparison-scope-control">
+
+                        <label for="comparisonScopeSelect">
+                            Abrangência da comparação
+                        </label>
+
+                        <select id="comparisonScopeSelect">
+
+                            <option
+                                value="both"
+                                selected
+                            >
+                                Município × Rio Grande do Sul
+                            </option>
+
+                            <option value="municipio">
+                                Município selecionado
+                            </option>
+
+                            <option value="rs">
+                                Rio Grande do Sul
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+<div
+                        id="comparisonContext"
+                        class="comparison-context"
+                    >
+                    </div>
+
+                </div>
+
+
+                <div class="comparison-grid">
+
+
+                    <article class="panel comparison-panel">
+
+                        <div class="panel-title">
+
+                            <div>
+
+                                <h3>
+                                    Etapas de ensino
+                                </h3>
+
+                                <p>
+                                    Fundamental, anos iniciais,
+                                    anos finais e ensino médio
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            id="chartCompareEtapas"
+                            class="comparison-plot"
+                        >
+                        </div>
+
+                    </article>
+
+
+
+                    <article class="panel comparison-panel">
+
+                        <div class="panel-title">
+
+                            <div>
+
+                                <h3>
+                                    Localização
+                                </h3>
+
+                                <p>
+                                    Total × Urbana × Rural
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            id="chartCompareLocalizacao"
+                            class="comparison-plot"
+                        >
+                        </div>
+
+                    </article>
+
+
+
+                    <article class="panel comparison-panel">
+
+                        <div class="panel-title">
+
+                            <div>
+
+                                <h3>
+                                    Dependência administrativa
+                                </h3>
+
+                                <p>
+                                    Redes e dependências de ensino
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div
+                            id="chartCompareDependencia"
+                            class="comparison-plot"
+                        >
+                        </div>
+
+                    </article>
+
+
+                </div>
+
+
+                <div
+                    id="ppaComparisonNote"
+                    class="ppa-comparison-note"
+                >
+                </div>
+
+            </section>
+
+
+<div class="content-grid">
+
+                <article class="panel chart-panel">
+
+                    <div class="panel-title">
+
+                        <div>
+
+                            <h3>
+                                Série histórica municipal
+                            </h3>
+
+                            <p>
+                                Total × Total — fonte oficial do Inep
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="chartMunicipioSerie"
+                        class="plot"
+                    ></div>
+
+                </article>
+
+
+                <article class="panel ranking-panel">
+
+                    <div class="panel-title">
+
+                        <div>
+
+                            <h3>
+                                Ranking municipal
+                            </h3>
+
+                            <p>
+                                clique em um município para selecioná-lo
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="rankingMunicipios"
+                        class="ranking-list tall"
+                    ></div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================================================
+             ESCOLAS
+             ================================================================================= -->
+
+        <section
+            id="view-escolas"
+            class="view"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-kicker">
+                        RIO GRANDE DO SUL
+                    </div>
+
+                    <h2>
+                        Escolas
+                    </h2>
+
+                </div>
+
+                <div
+                    id="schoolContext"
+                    class="context-label"
+                ></div>
+
+            </div>
+
+
+            <div class="school-selector-row">
+
+                <div class="filter-item wide">
+
+                    <label for="schoolSelect">
+                        Escola
+                    </label>
+
+                    <select id="schoolSelect"></select>
+
+                </div>
+
+                <div class="school-note">
+
+                    Nos filtros escolares,
+                    <strong>Total</strong>
+                    significa todas as escolas.
+
+                    <strong>Pública</strong>
+                    reúne Federal, Estadual e Municipal.
+
+                </div>
+
+            </div>
+
+
+            <div class="kpi-grid">
+
+                <article class="kpi-card">
+
+                    <span>
+                        Escola selecionada
+                    </span>
+
+                    <strong id="kpiEscola">
+                        —
+                    </strong>
+
+                    <small id="kpiEscolaNome">
+                        —
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        Escolas com valor
+                    </span>
+
+                    <strong id="kpiEscolasDisponiveis">
+                        —
+                    </strong>
+
+                    <small>
+                        município e ano selecionados
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        Escolas no arquivo
+                    </span>
+
+                    <strong id="kpiEscolasArquivo">
+                        —
+                    </strong>
+
+                    <small>
+                        antes do filtro de disponibilidade
+                    </small>
+
+                </article>
+
+
+                <article class="kpi-card">
+
+                    <span>
+                        Município
+                    </span>
+
+                    <strong id="kpiMunicipioEscola">
+                        —
+                    </strong>
+
+                    <small>
+                        TDI municipal Total × Total
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            <div class="content-grid">
+
+                <article class="panel chart-panel">
+
+                    <div class="panel-title">
+
+                        <div>
+
+                            <h3>
+                                Série histórica da escola
+                            </h3>
+
+                            <p>
+                                valores publicados pelo Inep
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="chartEscolaSerie"
+                        class="plot"
+                    ></div>
+
+                </article>
+
+
+                <article class="panel ranking-panel">
+
+                    <div class="panel-title">
+
+                        <div>
+
+                            <h3>
+                                Ranking das escolas
+                            </h3>
+
+                            <p>
+                                escolas com valor no recorte
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="rankingEscolas"
+                        class="ranking-list tall"
+                    ></div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <div
+        id="methodologyModal"
+        class="modal-backdrop hidden"
+        aria-hidden="true"
+    >
+
+        <div
+            class="methodology-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="methodologyTitle"
+        >
+
+            <div class="methodology-modal-header">
+
+                <div>
+
+                    <div class="section-kicker">
+                        NOTA METODOLÓGICA
+                    </div>
+
+                    <h2 id="methodologyTitle">
+                        Taxa de Distorção Idade-Série
+                    </h2>
+
+                </div>
+
+                <button
+                    id="methodologyCloseButton"
+                    class="modal-close-button"
+                    type="button"
+                    aria-label="Fechar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="methodology-content">
+
+                <section>
+
+                    <h3>
+                        O que o indicador mede?
+                    </h3>
+
+                    <p>
+                        A Taxa de Distorção Idade-Série expressa o percentual
+                        de estudantes matriculados em uma série ou grupo de séries
+                        com idade superior à idade recomendada para aquela etapa
+                        da trajetória escolar.
+                    </p>
+
+                    <p>
+                        Na definição operacional do Inep, considerando uma série
+                        cuja idade adequada é <em>i</em>, são identificados como
+                        estando em distorção os estudantes que completam
+                        <strong>i + 2 anos ou mais</strong> no ano de referência.
+                    </p>
+
+                </section>
+
+
+                <section>
+
+                    <h3>
+                        Indicadores utilizados neste painel
+                    </h3>
+
+                    <div class="methodology-indicator-grid">
+
+                        <div>
+                            <strong>Fundamental — Total</strong>
+                            <span>TDI_FUN</span>
+                        </div>
+
+                        <div>
+                            <strong>Fundamental — Anos Iniciais</strong>
+                            <span>TDI_FUN_AI</span>
+                        </div>
+
+                        <div>
+                            <strong>Fundamental — Anos Finais</strong>
+                            <span>TDI_FUN_AF</span>
+                        </div>
+
+                        <div>
+                            <strong>Ensino Médio — Total</strong>
+                            <span>TDI_MED</span>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <section>
+
+                    <h3>
+                        Fonte dos dados
+                    </h3>
+
+                    <p>
+                        As taxas observadas são provenientes dos arquivos oficiais
+                        de Indicadores Educacionais do Instituto Nacional de Estudos
+                        e Pesquisas Educacionais Anísio Teixeira — Inep, derivados
+                        do Censo Escolar da Educação Básica.
+                    </p>
+
+                    <p>
+
+                        <a
+                            href="https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-distorcao-idade-serie"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Página oficial — Taxas de Distorção Idade-Série / Inep
+                        </a>
+
+                    </p>
+
+                    <p>
+
+                        <a
+                            href="https://download.inep.gov.br/publicacoes/institucionais/estatisticas_e_indicadores/dicionario_de_indicadores_educacionais_formulas_de_calculo.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Dicionário de Indicadores Educacionais — fórmula e definição
+                        </a>
+
+                    </p>
+
+                </section>
+
+
+                <section>
+
+                    <h3>
+                        Metas de referência para 2027
+                    </h3>
+
+                    <table class="methodology-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Etapa</th>
+                                <th>Meta 2027</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>
+                                    Ensino Fundamental — Anos Iniciais
+                                </td>
+                                <td>
+                                    0%
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    Ensino Fundamental — Anos Finais
+                                </td>
+                                <td>
+                                    10%
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    Ensino Médio — Total
+                                </td>
+                                <td>
+                                    10%
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                    
+                    
+
+                    <div class="ppa-source-box">
+
+                        <strong>
+                            Fonte das metas de 2027
+                        </strong>
+
+                        <p>
+                            RIO GRANDE DO SUL. Secretaria de Planejamento,
+                            Governança e Gestão. Departamento de Planejamento
+                            Governamental.
+                            <em>Plano Plurianual 2024–2027</em>.
+                            Porto Alegre: Secretaria de Planejamento,
+                            Governança e Gestão, 2023.
+                        </p>
+
+                        <a
+                            href="https://planejamento.rs.gov.br/upload/arquivos/202311/28172943-mensagem-ppa-2024-2027-pos-emenda-28112023-final-1.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Consultar o PPA 2024–2027
+                        </a>
+
+                    </div>
+
+<p class="methodology-warning">
+
+                        As metas do PPA 2024–2027 utilizadas neste painel
+                        referem-se à <strong>rede pública estadual</strong>.
+
+                        Por essa razão, a comparação cartográfica com a meta
+                        somente é habilitada quando o recorte selecionado é:
+
+                        <strong>Localização = Total</strong> e
+                        <strong>Dependência = Estadual</strong>.
+
+                        Nos municípios, a diferença representa a distância
+                        em relação ao patamar estadual estabelecido pelo PPA;
+                        não constitui uma meta municipal formal.
+
+                    </p>
+
+
+                </section>
+
+
+                <section>
+
+                    <h3>
+                        Regras adotadas no painel
+                    </h3>
+
+                    <ul>
+
+                        <li>
+                            Ausência de informação é representada por
+                            <strong>NA</strong>, nunca por zero.
+                        </li>
+
+                        <li>
+                            As taxas agregadas de Brasil, UFs e municípios são
+                            as taxas oficiais publicadas pelo Inep; não são médias
+                            aritméticas das unidades inferiores.
+                        </li>
+
+                        <li>
+                            O mapa mantém os 497 municípios atuais do Rio Grande
+                            do Sul visíveis em todos os anos.
+                        </li>
+
+                        <li>
+                            Pinto Bandeira aparece como NA entre 2007 e 2012,
+                            período sem registro municipal correspondente na fonte
+                            utilizada.
+                        </li>
+
+                        <li>
+                            Na análise escolar, a presença da escola no arquivo
+                            é distinguida da existência efetiva de uma taxa publicada.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <footer>
+
+        <div>
+            Fonte: Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira — Inep
+        </div>
+
+        <div>
+            Ausências são representadas como NA e nunca como zero.
+        </div>
+
+    </footer>
+
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="">
+    </script>
+
+    <script src="app.js"></script>
+
+    <script src="map_v2.js"></script>
+    <script src="enhancements_v3.js"></script>
+
+
+    <script src="compare_rs_v5.js"></script>
+</body>
+
+</html>

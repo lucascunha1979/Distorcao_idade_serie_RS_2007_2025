@@ -1,0 +1,158 @@
+{
+  "projeto": "TDI — Taxa de Distorção Idade-Série",
+  "versao_dados": "04C",
+  "periodo": {
+    "inicio": 2007,
+    "fim": 2025,
+    "anos": [
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "hierarquia": [
+    "BRASIL",
+    "UF",
+    "MUNICIPIO_RS",
+    "ESCOLA_RS"
+  ],
+  "indicadores": {
+    "TDI_FUN": "Ensino Fundamental — Total",
+    "TDI_FUN_AI": "Ensino Fundamental — Anos Iniciais",
+    "TDI_FUN_AF": "Ensino Fundamental — Anos Finais",
+    "TDI_MED": "Ensino Médio — Total"
+  },
+  "categorias": {
+    "localizacao": [
+      "Total",
+      "Urbana",
+      "Rural"
+    ],
+    "dependencia": [
+      "Total",
+      "Federal",
+      "Estadual",
+      "Municipal",
+      "Privada",
+      "Pública"
+    ]
+  },
+  "universos": {
+    "ufs": 27,
+    "municipios_rs": 497,
+    "escolas_distintas_na_serie": 11859
+  },
+  "regras": {
+    "ausencia": "null; nunca zero",
+    "pinto_bandeira_2007_2012": "NA estrutural",
+    "pinto_bandeira_codigo": "4314548",
+    "universo_escolar_comparavel": "ESCOLA_TEM_TDI_ANO = true",
+    "taxas_agregadas": "usar exclusivamente taxas oficiais do Inep; não calcular média simples das unidades inferiores"
+  },
+  "carregamento": {
+    "default": {
+      "brasil": "dados/brasil_total_total.json",
+      "estados": "dados/estados_total_total.json",
+      "municipios": "dados/municipios_total_total.json"
+    },
+    "detalhe": {
+      "brasil": "dados/brasil_detalhe.json",
+      "estados": "dados/estados_detalhe.json",
+      "municipios_por_ano": "dados/municipios/{ano}.json",
+      "escolas_por_municipio": "dados/escolas/{codigo_municipio}.json"
+    },
+    "dimensoes": {
+      "ufs": "dados/dim_ufs.json",
+      "municipios": "dados/dim_municipios_rs.json",
+      "escolas_index": "dados/escolas_index.json"
+    },
+    "resumos": {
+      "escolas_anual": "dados/escolas_resumo_anual.json"
+    }
+  },
+  "quantidades_arquivos": {
+    "municipios_por_ano": 19,
+    "escolas_por_municipio": 497,
+    "json_total": 525
+  },
+  "versao_painel": "V5",
+  "mapa": {
+    "arquivo": "dados/mapa/municipios_rs.geojson",
+    "municipios": 497,
+    "layer_origem": "rs_municipios_2024",
+    "crs": "EPSG:4326",
+    "simplificacao_graus": 0.0005,
+    "animacao": {
+      "inicio": 2007,
+      "fim": 2025
+    }
+  },
+  "metas_2027": {
+    "escopo": "Rede pública estadual do Rio Grande do Sul",
+    "localizacao_referencia": "Total",
+    "dependencia_referencia": "Estadual",
+    "TDI_FUN": null,
+    "TDI_FUN_AI": 0,
+    "TDI_FUN_AF": 10,
+    "TDI_MED": 10,
+    "fonte": "RIO GRANDE DO SUL. Secretaria de Planejamento, Governança e Gestão. Departamento de Planejamento Governamental. Plano Plurianual 2024-2027. Porto Alegre: Secretaria de Planejamento, Governança e Gestão, 2023.",
+    "url": "https://planejamento.rs.gov.br/upload/arquivos/202311/28172943-mensagem-ppa-2024-2027-pos-emenda-28112023-final-1.pdf"
+  },
+  "metodologia": {
+    "fonte": "Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira — Inep",
+    "pagina_oficial": "https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-distorcao-idade-serie",
+    "definicao": "Percentual de alunos em cada série ou grupo de séries com idade superior à idade recomendada.",
+    "criterio_operacional": "Idade adequada para a série + 2 anos ou mais."
+  },
+  "comparador": {
+    "etapas": [
+      "TDI_FUN",
+      "TDI_FUN_AI",
+      "TDI_FUN_AF",
+      "TDI_MED"
+    ],
+    "localizacao": [
+      "Total",
+      "Urbana",
+      "Rural"
+    ],
+    "dependencia": [
+      "Total",
+      "Pública",
+      "Estadual",
+      "Municipal",
+      "Federal",
+      "Privada"
+    ]
+  },
+  "comparacao_territorial": {
+    "padrao": "Município × Rio Grande do Sul",
+    "opcoes": [
+      "Município × Rio Grande do Sul",
+      "Município selecionado",
+      "Rio Grande do Sul"
+    ],
+    "regra_rs": "Rio Grande do Sul utiliza a taxa oficial da UF publicada pelo Inep. Não é calculada média municipal."
+  },
+  "correcao_leaflet_v5": {
+    "tiles": "Tiles forçados para 256x256 e neutralização de CSS global de imagens.",
+    "svg": "Neutralização de max-width em SVG do Leaflet.",
+    "enquadramento": "invalidateSize + fitBounds após abertura da aba municipal."
+  }
+}
