@@ -1,0 +1,149 @@
+name: Importar pacote TDI
+
+on:
+  push:
+    paths:
+      - "TDI_PAINEL_V5_GITHUB.zip"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  importar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verificar pacote
+        shell: bash
+        run: |
+          set -e
+
+          ZIP="TDI_PAINEL_V5_GITHUB.zip"
+
+          if [ ! -f "$ZIP" ]; then
+            echo "ERRO: $ZIP não encontrado."
+            exit 1
+          fi
+
+          echo "Pacote encontrado:"
+          ls -lh "$ZIP"
+
+          unzip -t "$ZIP"
+
+      - name: Remover versão anterior do painel
+        shell: bash
+        run: |
+          set -e
+
+          rm -rf dados
+
+          rm -f index.html
+          rm -f styles.css
+          rm -f app.js
+          rm -f map_v2.js
+          rm -f enhancements_v3.js
+          rm -f compare_rs_v5.js
+          rm -f manifest.json
+          rm -f .nojekyll
+
+      - name: Extrair novo painel
+        shell: bash
+        run: |
+          set -e
+
+          unzip -o TDI_PAINEL_V5_GITHUB.zip -d .
+
+          rm -f TDI_PAINEL_V5_GITHUB.zip
+
+      - name: Validar estrutura principal
+        shell: bash
+        run: |
+          set -e
+
+          test -f index.html
+          test -f styles.css
+          test -f app.js
+          test -f map_v2.js
+          test -f enhancements_v3.js
+          test -f compare_rs_v5.js
+          test -f manifest.json
+          test -f .nojekyll
+
+          test -d dados
+          test -d dados/municipios
+          test -d dados/escolas
+          test -d dados/mapa
+
+          test -f dados/mapa/municipios_rs.geojson
+
+          echo "Estrutura principal: OK"
+
+      - name: Validar dados do painel
+        shell: bash
+        run: |
+          set -e
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          raiz = Path(".")
+
+          geo = json.loads(
+              (raiz / "dados/mapa/municipios_rs.geojson")
+              .read_text(encoding="utf-8")
+          )
+
+          n_geo = len(geo.get("features", []))
+
+          municipios = list(
+              (raiz / "dados/municipios").glob("*.json")
+          )
+
+          escolas = list(
+              (raiz / "dados/escolas").glob("*.json")
+          )
+
+          print("Municípios no GeoJSON:", n_geo)
+          print("Arquivos anuais municipais:", len(municipios))
+          print("Arquivos escolares:", len(escolas))
+
+          assert n_geo == 497, (
+              f"Esperados 497 municípios no GeoJSON; encontrados {n_geo}"
+          )
+
+          assert len(municipios) == 19, (
+              f"Esperados 19 arquivos municipais; encontrados {len(municipios)}"
+          )
+
+          assert len(escolas) == 497, (
+              f"Esperados 497 arquivos escolares; encontrados {len(escolas)}"
+          )
+
+          print("VALIDAÇÃO TDI: OK")
+          PY
+
+      - name: Commit automático do painel
+        shell: bash
+        run: |
+          set -e
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração para registrar."
+            exit 0
+          fi
+
+          git commit -m "Publica painel TDI 2007-2025"
+          git push
