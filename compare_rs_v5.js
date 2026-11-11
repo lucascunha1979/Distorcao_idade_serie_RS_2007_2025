@@ -788,60 +788,6 @@ function renderStagesV5(
         );
 
 
-    /*
-       Metas PPA:
-       somente Total + Estadual.
-    */
-
-    if (
-        state.location === "Total"
-        &&
-        state.dependency === "Estadual"
-    ) {
-
-        traces.push(
-            {
-
-                type:
-                    "scatter",
-
-                mode:
-                    "markers",
-
-                name:
-                    "Meta PPA 2027",
-
-                x:
-                    labels,
-
-                y: [
-
-                    null,
-                    0,
-                    10,
-                    10
-
-                ],
-
-                marker: {
-
-                    symbol:
-                        "diamond",
-
-                    size:
-                        12
-
-                },
-
-                hovertemplate:
-                    "Meta PPA 2027<br>%{y:.1f}%<extra></extra>"
-
-            }
-        );
-
-    }
-
-
     Plotly.react(
 
         "chartCompareEtapas",
@@ -1183,24 +1129,8 @@ async function updateComparatorsV5() {
 
 
     if (
-        state.location === "Total"
-        &&
-        state.dependency === "Estadual"
+        note
     ) {
-
-        note.innerHTML =
-            `A série <strong>Rio Grande do Sul</strong> corresponde `
-            +
-            `à taxa oficial da UF publicada pelo Inep, `
-            +
-            `<strong>não à média dos municípios</strong>. `
-            +
-            `Os diamantes representam as metas do PPA 2024–2027 `
-            +
-            `para a rede pública estadual.`;
-
-    }
-    else {
 
         note.innerHTML =
             `A série <strong>Rio Grande do Sul</strong> corresponde `
@@ -1209,15 +1139,12 @@ async function updateComparatorsV5() {
             +
             `<strong>não à média dos 497 municípios</strong>. `
             +
-            `Para visualizar as metas do PPA, selecione `
+            `As metas estaduais do PPA 2024–2027 são apresentadas `
             +
-            `<strong>Localização = Total</strong> e `
-            +
-            `<strong>Dependência = Estadual</strong>.`;
+            `separadamente nos cards acima do mapa.`;
 
     }
 
-}
 
 
 
