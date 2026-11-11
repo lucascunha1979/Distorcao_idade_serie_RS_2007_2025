@@ -529,9 +529,165 @@
 
 
             
+            <section
+                id="stateGoalsPpa"
+                class="state-goals-section"
+                aria-label="Metas estaduais do PPA 2024–2027"
+            >
+
+                <div class="state-goals-heading">
+
+                    <div>
+
+                        <div class="section-kicker">
+                            METAS ESTADUAIS • PPA 2024–2027
+                        </div>
+
+                        <h3>
+                            Rio Grande do Sul — rede estadual
+                        </h3>
+
+                        <p>
+                            Leitura exclusivamente estadual. Os valores observados usam
+                            Localização = Total e Dependência = Estadual e não representam
+                            metas municipais.
+                        </p>
+
+                    </div>
+
+                    <div
+                        id="stateGoalsYearContext"
+                        class="state-goals-context"
+                    >
+                    </div>
+
+                </div>
+
+
+                <div class="state-goals-grid">
+
+                    <article class="state-goal-card">
+
+                        <div class="state-goal-title">
+                            Ensino Fundamental — Anos Iniciais
+                        </div>
+
+                        <div class="state-goal-values">
+
+                            <div>
+                                <span>Taxa observada</span>
+                                <strong id="goalAiCurrent">—</strong>
+                            </div>
+
+                            <div>
+                                <span>Meta 2027</span>
+                                <strong>0,0%</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="state-goal-distance">
+
+                            <span>Distância à meta</span>
+                            <strong id="goalAiDistance">—</strong>
+
+                        </div>
+
+                        <div
+                            id="goalAiStatus"
+                            class="state-goal-status"
+                        >
+                            —
+                        </div>
+
+                    </article>
+
+
+                    <article class="state-goal-card">
+
+                        <div class="state-goal-title">
+                            Ensino Fundamental — Anos Finais
+                        </div>
+
+                        <div class="state-goal-values">
+
+                            <div>
+                                <span>Taxa observada</span>
+                                <strong id="goalAfCurrent">—</strong>
+                            </div>
+
+                            <div>
+                                <span>Meta 2027</span>
+                                <strong>10,0%</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="state-goal-distance">
+
+                            <span>Distância à meta</span>
+                            <strong id="goalAfDistance">—</strong>
+
+                        </div>
+
+                        <div
+                            id="goalAfStatus"
+                            class="state-goal-status"
+                        >
+                            —
+                        </div>
+
+                    </article>
+
+
+                    <article class="state-goal-card">
+
+                        <div class="state-goal-title">
+                            Ensino Médio — Total
+                        </div>
+
+                        <div class="state-goal-values">
+
+                            <div>
+                                <span>Taxa observada</span>
+                                <strong id="goalEmCurrent">—</strong>
+                            </div>
+
+                            <div>
+                                <span>Meta 2027</span>
+                                <strong>10,0%</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="state-goal-distance">
+
+                            <span>Distância à meta</span>
+                            <strong id="goalEmDistance">—</strong>
+
+                        </div>
+
+                        <div
+                            id="goalEmStatus"
+                            class="state-goal-status"
+                        >
+                            —
+                        </div>
+
+                    </article>
+
+                </div>
+
+                <div class="state-goals-source">
+                    Metas: PPA 2024–2027 do Rio Grande do Sul. Taxas observadas: Inep.
+                </div>
+
+            </section>
+
+
             <div class="map-controls-panel">
 
-                <div class="map-control-group">
+                <div class="map-control-group map-mode-control">
 
                     <label for="mapModeSelect">
                         Visualização do mapa
@@ -543,7 +699,7 @@
                             Taxa observada
                         </option>
 
-                        <option value="meta">
+                        <option value="meta" hidden disabled>
                             Distância ao patamar da meta 2027
                         </option>
 
@@ -1415,6 +1571,7 @@
 
 
     <script src="compare_rs_v5.js"></script>
+    <script src="goals_cards_v6.js"></script>
 </body>
 
 </html>
